@@ -22,7 +22,7 @@ var game = new Phaser.Game(config);
 var map;
 var player;
 var cursors;
-var groundLayer, coinLayer;
+var groundLayer, coinLayer, SmashLayer;
 var text;
 var score = 0;
 
@@ -40,22 +40,22 @@ function preload() {
 function create() {
     // load the map 
     map = this.make.tilemap({key: 'map'});
-
     // tiles for the ground layer
     var groundTiles = map.addTilesetImage('tiles');
     // create the ground layer
     groundLayer = map.createDynamicLayer('World', groundTiles, 1, 1);
     // the player will collide with this layer
     groundLayer.setCollisionByExclusion([-1]);
-
     // coin image used as tileset
     var coinTiles = map.addTilesetImage('coin');
     // add coins as tiles
     coinLayer = map.createDynamicLayer('Coins', coinTiles, 0, 0);
-
-    var smashTiles = map.addTilesetImage('smashBlock');
-
-    SmashLayer = map.createDynamicLayer('smashBlocks', smashTiles, 1, 1);
+    //tile for the smash block layers
+    var SmashTiles = map.addTilesetImage('tiles');
+    //creating the smash layer
+    SmashLayer = map.createDynamicLayer('Smash', SmashTiles, 1, 1);
+    //player collides with layer
+    SmashLayer.setCollisionByExclusion([-1]);
 
     // set the boundaries of our game world
     this.physics.world.bounds.width = groundLayer.width;
@@ -71,11 +71,13 @@ function create() {
     
     // player will collide with the level tiles 
     this.physics.add.collider(groundLayer, player);
+    this.physics.add.collider(SmashLayer, player);
 
     coinLayer.setTileIndexCallback(17, collectCoin, this);
     // when the player overlaps with a tile with index 17, collectCoin 
     // will be called    
     this.physics.add.overlap(player, coinLayer);
+
 
     // player walk animation
     this.anims.create({
